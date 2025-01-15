@@ -11,15 +11,11 @@ import (
 )
 
 func main() {
-	directives := `
-		SecRuleEngine On
-		SecRule ARGS "attack" "id:1,phase:2,deny,status:403,log,msg:'Blocked by Coraza WAF'"
-		SecAuditEngine On
-		SecAuditLog /dev/stdout
-	`
-
 	waf, err := coraza.NewWAF(
-		coraza.NewWAFConfig().WithDirectives(directives),
+		coraza.NewWAFConfig().
+			WithDirectivesFromFile("coraza.conf").
+			WithDirectivesFromFile("coreruleset/crs-setup.conf.example").
+			WithDirectivesFromFile("coreruleset/rules/*.conf"),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create WAF: %v", err)
